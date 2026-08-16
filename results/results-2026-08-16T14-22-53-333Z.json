@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-08-16T14-22-53-333Z",
+  "batchSize": 500,
+  "reports": [
+    {
+      "key": "load",
+      "name": "Load Test",
+      "purpose": "Compare achieved performance against the target metrics.",
+      "batch_size": 500,
+      "bytes_per_entry": 230,
+      "started_at": "2026-08-16T14:20:25.077Z",
+      "phases": [
+        {
+          "target_logs_per_second": 15000,
+          "duration_seconds": 121.15,
+          "requests_sent": 3601,
+          "requests_completed": 3601,
+          "logs_accepted": 730000,
+          "logs_rejected_validation": 0,
+          "logs_shed": 1070500,
+          "requests_shed": 2141,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 6025.83,
+          "target_attainment_percent": 40.17,
+          "error_rate_percent": 59.456,
+          "latency_ms_scheduled": {
+            "p50": 23.73,
+            "p90": 9275.51,
+            "p95": 18700.96,
+            "p99": 41970.74,
+            "max": 47101.33,
+            "mean": 2575.97
+          },
+          "latency_ms_wire": {
+            "p50": 23.34,
+            "p90": 9275.34,
+            "p95": 18700.3,
+            "p99": 41970.1,
+            "max": 47100.74,
+            "mean": 2575.23
+          },
+          "status_codes": {
+            "200": 1460,
+            "503": 2141
+          },
+          "errors": {}
+        }
+      ],
+      "totals": {
+        "logs_accepted": 730000,
+        "logs_shed": 1070500,
+        "requests_failed": 0,
+        "rows_before": 1000000,
+        "rows_after": 1730000,
+        "rows_inserted": 730000,
+        "accounting_delta": 0
+      },
+      "freshness_ms": null,
+      "queries": [
+        {
+          "name": "aggregate_1h_1m_by_service",
+          "requests": 141,
+          "errors": 3,
+          "latency": {
+            "p50": 9733.87,
+            "p90": 11825.53,
+            "p95": 12031.31,
+            "p99": 12233.51,
+            "max": 12449.77,
+            "mean": 7082.61
+          },
+          "statuses": {
+            "200": 126,
+            "503": 3
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"inventory\",\"count\":89},{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"recommendations\",\"count\":102},{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"notifications\",\"count\":115},{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"search\",\"count\":111},{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"gateway\",\"count\":98},{\"start\":\"2026-08-16T13:35:00Z\",\"group\":\"payments\",\"count\":9"
+        },
+        {
+          "name": "aggregate_24h_1h_by_level",
+          "requests": 141,
+          "errors": 17,
+          "latency": {
+            "p50": 10000.44,
+            "p90": 12322.27,
+            "p95": 12521.12,
+            "p99": 12924.76,
+            "max": 13127.86,
+            "mean": 7283.64
+          },
+          "statuses": {
+            "200": 112,
+            "503": 17
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"debug\",\"count\":189},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"info\",\"count\":616},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"warn\",\"count\":152},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"error\",\"count\":43},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"debug\",\"count\":369},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"info\",\"count\":1093},{\"start\":\"2026-08-15T15:0"
+        },
+        {
+          "name": "logs_recent_page",
+          "requests": 141,
+          "errors": 47,
+          "latency": {
+            "p50": 8628.62,
+            "p90": 10001.55,
+            "p95": 10002.56,
+            "p99": 10051.34,
+            "max": 10071.47,
+            "mean": 5954.63
+          },
+          "statuses": {
+            "200": 84,
+            "503": 47
+          },
+          "lastBody": "{\"error\":\"database temporarily unavailable; please retry\"}"
+        },
+        {
+          "name": "logs_filtered",
+          "requests": 141,
+          "errors": 47,
+          "latency": {
+            "p50": 8717.13,
+            "p90": 10001.51,
+            "p95": 10002.19,
+            "p99": 10072.48,
+            "max": 10074.01,
+            "mean": 5982.24
+          },
+          "statuses": {
+            "200": 84,
+            "503": 47
+          },
+          "lastBody": "{\"error\":\"database temporarily unavailable; please retry\"}"
+        }
+      ],
+      "resources": {
+        "logsvc-app": {
+          "samples": 65,
+          "cpuPercentMean": 12.51,
+          "cpuPercentMax": 30.91,
+          "memoryMiBMean": 95.39,
+          "memoryMiBMax": 116.3,
+          "memoryLimitMiB": 256
+        },
+        "logsvc-postgres": {
+          "samples": 65,
+          "cpuPercentMean": 95.33,
+          "cpuPercentMax": 103.65,
+          "memoryMiBMean": 345.55,
+          "memoryMiBMax": 359.7,
+          "memoryLimitMiB": 1024
+        }
+      },
+      "service_metrics": {
+        "uptime_seconds": 212.945,
+        "ingest": {
+          "entries_received": 2800501,
+          "entries_accepted": 1730000,
+          "entries_rejected": 0,
+          "requests_shed": 1901,
+          "batches_flushed": 1256,
+          "rows_copied": 1730000,
+          "copy_failures": 0,
+          "flush_latency_ms": {
+            "count": 1256,
+            "p50": 4.846,
+            "p90": 63.126,
+            "p95": 74.089,
+            "p99": 482.238,
+            "max": 595.169
+          },
+          "batch_rows": {
+            "count": 1256,
+            "p50": 500,
+            "p90": 4000,
+            "p95": 7000,
+            "p99": 10000,
+            "max": 10000
+          },
+          "end_to_end_latency_ms": {
+            "count": 2460,
+            "p50": 51.03,
+            "p90": 1752.924,
+            "p95": 9828.251,
+            "p99": 33255.076,
+            "max": 40299.832
+          }
+        },
+        "query": {
+          "logs_requests": 282,
+          "logs_errors": 98,
+          "logs_latency_ms": {
+            "count": 266,
+            "p50": 8730.808,
+            "p90": 10000.53,
+            "p95": 10000.863,
+            "p99": 10070.857,
+            "max": 10072.2
+          },
+          "aggregate_requests": 282,
+          "aggregate_errors": 22,
+          "aggregate_latency_ms": {
+            "count": 262,
+            "p50": 9999.531,
+            "p90": 12127.474,
+            "p95": 12321.801,
+            "p99": 12732.301,
+            "max": 13127.375
+          }
+        },
+        "retention": {
+          "sweeps": 1,
+          "partitions_dropped": 0,
+          "last_sweep_at": "2026-08-16T14:19:15.648Z"
+        },
+        "memory": {
+          "rss_mb": 149.613,
+          "heap_used_mb": 33.654,
+          "heap_total_mb": 62.902,
+          "external_mb": 15.874,
+          "array_buffers_mb": 12.215
+        },
+        "writer": {
+          "pending_rows": 0,
+          "queued_batches": 0,
+          "busy_writers": 0,
+          "healthy_writers": 4,
+          "total_writers": 4,
+          "open_batch_rows": 0
+        }
+      }
+    }
+  ]
+}

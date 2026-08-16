@@ -1,0 +1,176 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  # Fast feedback: types and pure logic, no containers required.
+  static:
+    name: Typecheck and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck source
+        run: npm run typecheck
+
+      - name: Typecheck tests and load harness
+        run: npx tsc -p tsconfig.test.json --noEmit
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build
+        run: npm run build
+
+  # The behaviour that only a real PostgreSQL can verify: binary COPY framing,
+  # partition routing, keyset pagination and aggregation arithmetic.
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 60); do
+            if [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/health)" = "200" ]; then
+              echo "healthy after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "service never became healthy"; docker compose logs app; exit 1
+
+      - name: Integration tests
+        run: npm run test:integration
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  # The required-contract check, run in both configurations.
+  #
+  # Configuration A is what the submission is graded against: a bare
+  # `docker compose up` with no environment file must serve all four endpoints
+  # unauthenticated. Configuration B proves the optional auth feature enforces
+  # credentials without changing the contract's shape.
+  contract:
+    name: Contract smoke (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: auth disabled (default posture)
+            auth_enabled: 'false'
+            expect_auth: 'false'
+            api_key: ''
+          - name: auth enabled with seeded key
+            auth_enabled: 'true'
+            expect_auth: 'true'
+            api_key: 'ci-loadgen-key'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start the stack
+        env:
+          AUTH_ENABLED: ${{ matrix.auth_enabled }}
+          LOADGEN_API_KEY: ${{ matrix.api_key }}
+        run: docker compose up -d --build
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 60); do
+            if [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/health)" = "200" ]; then
+              echo "healthy after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "service never became healthy"; docker compose logs app; exit 1
+
+      - name: Contract smoke test
+        env:
+          EXPECT_AUTH: ${{ matrix.expect_auth }}
+          LOADGEN_API_KEY: ${{ matrix.api_key }}
+        run: npm run smoke
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  # A short throughput run, well under the measured ceiling, so a change that
+  # badly regresses ingestion fails the build rather than being discovered later.
+  performance-guard:
+    name: Performance regression guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start the stack
+        run: docker compose up -d --build
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 60); do
+            if [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/health)" = "200" ]; then exit 0; fi
+            sleep 1
+          done
+          docker compose logs app; exit 1
+
+      - name: Sustain 10k logs/s for 30s
+        # Deliberately below the measured 45k/s ceiling: shared CI runners are
+        # slower and noisier than the benchmark host, and a guard that fails
+        # intermittently is a guard people learn to ignore.
+        run: node --experimental-transform-types loadtest/ci-guard.ts 10000 30 8000
+
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs app
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

@@ -1,0 +1,305 @@
+{
+  "generatedAt": "2026-08-16T15-01-22-722Z",
+  "batchSize": 500,
+  "reports": [
+    {
+      "key": "stress",
+      "name": "Stress Test",
+      "purpose": "Verify stability and performance as load progressively increases.",
+      "batch_size": 500,
+      "bytes_per_entry": 230,
+      "started_at": "2026-08-16T14:57:59.401Z",
+      "settle_seconds": 4.43,
+      "phases": [
+        {
+          "target_logs_per_second": 15000,
+          "duration_seconds": 30.06,
+          "requests_sent": 900,
+          "requests_completed": 900,
+          "logs_accepted": 450000,
+          "logs_rejected_validation": 0,
+          "logs_shed": 0,
+          "requests_shed": 0,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 14969.03,
+          "target_attainment_percent": 99.79,
+          "error_rate_percent": 0,
+          "latency_ms_scheduled": {
+            "p50": 31.65,
+            "p90": 181.5,
+            "p95": 328.28,
+            "p99": 548.01,
+            "max": 789.71,
+            "mean": 77.74
+          },
+          "latency_ms_wire": {
+            "p50": 31.2,
+            "p90": 171.88,
+            "p95": 327.01,
+            "p99": 547.69,
+            "max": 668.95,
+            "mean": 76.39
+          },
+          "status_codes": {
+            "200": 900
+          },
+          "errors": {}
+        },
+        {
+          "target_logs_per_second": 22500,
+          "duration_seconds": 60.08,
+          "requests_sent": 2701,
+          "requests_completed": 2701,
+          "logs_accepted": 1306500,
+          "logs_rejected_validation": 0,
+          "logs_shed": 44000,
+          "requests_shed": 88,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 21744.64,
+          "target_attainment_percent": 96.64,
+          "error_rate_percent": 3.258,
+          "latency_ms_scheduled": {
+            "p50": 221.88,
+            "p90": 3056.7,
+            "p95": 3383.33,
+            "p99": 4117.2,
+            "max": 4556.9,
+            "mean": 983.69
+          },
+          "latency_ms_wire": {
+            "p50": 221.05,
+            "p90": 3043.31,
+            "p95": 3383.01,
+            "p99": 4117.04,
+            "max": 4556.08,
+            "mean": 982.42
+          },
+          "status_codes": {
+            "200": 2613,
+            "503": 88
+          },
+          "errors": {}
+        },
+        {
+          "target_logs_per_second": 30000,
+          "duration_seconds": 60.33,
+          "requests_sent": 3601,
+          "requests_completed": 3601,
+          "logs_accepted": 1660500,
+          "logs_rejected_validation": 0,
+          "logs_shed": 140000,
+          "requests_shed": 280,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 27521.44,
+          "target_attainment_percent": 91.74,
+          "error_rate_percent": 7.776,
+          "latency_ms_scheduled": {
+            "p50": 191.76,
+            "p90": 2415.92,
+            "p95": 2842.16,
+            "p99": 3499.16,
+            "max": 3998.49,
+            "mean": 673.63
+          },
+          "latency_ms_wire": {
+            "p50": 190.94,
+            "p90": 2414.48,
+            "p95": 2841.96,
+            "p99": 3494.62,
+            "max": 3997.85,
+            "mean": 672.32
+          },
+          "status_codes": {
+            "200": 3321,
+            "503": 280
+          },
+          "errors": {}
+        }
+      ],
+      "totals": {
+        "logs_accepted": 3417000,
+        "logs_shed": 184000,
+        "requests_failed": 0,
+        "rows_before": 1050000,
+        "rows_after": 4467001,
+        "rows_inserted": 3417001,
+        "accounting_delta": 1
+      },
+      "freshness_ms": null,
+      "queries": [
+        {
+          "name": "aggregate_1h_1m_by_service",
+          "intervalMs": 1000,
+          "requests": 51,
+          "skipped": 139,
+          "errors": 0,
+          "latency": {
+            "p50": 1667.15,
+            "p90": 7952.24,
+            "p95": 14223.18,
+            "p99": 20400.64,
+            "max": 20400.64,
+            "mean": 3183.86
+          },
+          "statuses": {
+            "200": 51
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"inventory\",\"count\":6},{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"gateway\",\"count\":6},{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"search\",\"count\":2},{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"checkout\",\"count\":6},{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"recommendations\",\"count\":7},{\"start\":\"2026-08-16T14:12:00Z\",\"group\":\"auth\",\"count\":2},{\"start\":\"2026-"
+        },
+        {
+          "name": "aggregate_24h_1h_by_level",
+          "intervalMs": 10000,
+          "requests": 15,
+          "skipped": 4,
+          "errors": 0,
+          "latency": {
+            "p50": 4321.99,
+            "p90": 14868.68,
+            "p95": 21092.59,
+            "p99": 21092.59,
+            "max": 21092.59,
+            "mean": 6655.56
+          },
+          "statuses": {
+            "200": 14
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"debug\",\"count\":419},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"info\",\"count\":1188},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"warn\",\"count\":295},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"error\",\"count\":98},{\"start\":\"2026-08-15T16:00:00Z\",\"group\":\"debug\",\"count\":213},{\"start\":\"2026-08-15T16:00:00Z\",\"group\":\"info\",\"count\":585},{\"start\":\"2026-08-15T16:0"
+        },
+        {
+          "name": "logs_recent_page",
+          "intervalMs": 1000,
+          "requests": 190,
+          "skipped": 0,
+          "errors": 0,
+          "latency": {
+            "p50": 16.96,
+            "p90": 339.65,
+            "p95": 631.27,
+            "p99": 1357.85,
+            "max": 1553.69,
+            "mean": 117.83
+          },
+          "statuses": {
+            "200": 190
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"18698004\",\"timestamp\":\"2026-08-16T15:00:39.926Z\",\"level\":\"info\",\"service\":\"freshness-probe\",\"message\":\"freshness-probe-1786892439925-dqjidbjdtml\",\"attributes\":{}},{\"id\":\"18697536\",\"timestamp\":\"2026-08-16T15:00:24.582Z\",\"level\":\"warn\",\"service\":\"notifications\",\"message\":\"cache miss for key #28838\",\"attributes\":{\"cached\":true,\"region\":\"us-east\",\"retries\":2,\"user_id\":\"46674\",\"request_"
+        },
+        {
+          "name": "logs_filtered",
+          "intervalMs": 5000,
+          "requests": 38,
+          "skipped": 0,
+          "errors": 0,
+          "latency": {
+            "p50": 169.73,
+            "p90": 792.01,
+            "p95": 890.31,
+            "p99": 929.4,
+            "max": 929.4,
+            "mean": 242.64
+          },
+          "statuses": {
+            "200": 38
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"18688167\",\"timestamp\":\"2026-08-16T15:00:24.538Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"cache miss for key #8556\",\"attributes\":{\"cached\":false,\"region\":\"ap-south\",\"retries\":1,\"user_id\":\"36470\",\"request_id\":\"req-4h01tp\"}},{\"id\":\"18676167\",\"timestamp\":\"2026-08-16T15:00:24.538Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"cache miss for key #8556\",\"attributes\":{\"cached\":f"
+        }
+      ],
+      "resources": {
+        "logsvc-app": {
+          "samples": 47,
+          "cpuPercentMean": 29.33,
+          "cpuPercentMax": 52.84,
+          "memoryMiBMean": 126.69,
+          "memoryMiBMax": 145.6,
+          "memoryLimitMiB": 256
+        },
+        "logsvc-postgres": {
+          "samples": 47,
+          "cpuPercentMean": 81.71,
+          "cpuPercentMax": 109.36,
+          "memoryMiBMean": 493.54,
+          "memoryMiBMax": 827.4,
+          "memoryLimitMiB": 1024
+        }
+      },
+      "service_metrics": {
+        "uptime_seconds": 1765.974,
+        "ingest": {
+          "entries_received": 20003092,
+          "entries_accepted": 18697588,
+          "entries_rejected": 4,
+          "requests_shed": 2371,
+          "batches_flushed": 19149,
+          "rows_copied": 18698004,
+          "copy_failures": 0,
+          "flush_latency_ms": {
+            "count": 4096,
+            "p50": 27.556,
+            "p90": 195.514,
+            "p95": 401.546,
+            "p99": 914.815,
+            "max": 1723.206
+          },
+          "batch_rows": {
+            "count": 4096,
+            "p50": 1000,
+            "p90": 2500,
+            "p95": 3997,
+            "p99": 7000,
+            "max": 10000
+          },
+          "end_to_end_latency_ms": {
+            "count": 4096,
+            "p50": 109.643,
+            "p90": 2071.148,
+            "p95": 2609.346,
+            "p99": 3361.878,
+            "max": 3781.754
+          }
+        },
+        "query": {
+          "logs_requests": 1379,
+          "logs_errors": 80,
+          "logs_latency_ms": {
+            "count": 1379,
+            "p50": 106.861,
+            "p90": 9298.032,
+            "p95": 10000.094,
+            "p99": 10051.923,
+            "max": 30803.301
+          },
+          "aggregate_requests": 1073,
+          "aggregate_errors": 34,
+          "aggregate_latency_ms": {
+            "count": 1073,
+            "p50": 3151.974,
+            "p90": 10620.859,
+            "p95": 11622.232,
+            "p99": 14222.244,
+            "max": 20789.641
+          }
+        },
+        "retention": {
+          "sweeps": 7,
+          "partitions_dropped": 0,
+          "last_sweep_at": "2026-08-16T14:56:52.090Z"
+        },
+        "memory": {
+          "rss_mb": 174.176,
+          "heap_used_mb": 27.013,
+          "heap_total_mb": 53.902,
+          "external_mb": 22.387,
+          "array_buffers_mb": 18.728
+        },
+        "writer": {
+          "pending_rows": 0,
+          "queued_batches": 0,
+          "busy_writers": 0,
+          "healthy_writers": 4,
+          "total_writers": 4,
+          "open_batch_rows": 0
+        }
+      }
+    }
+  ]
+}

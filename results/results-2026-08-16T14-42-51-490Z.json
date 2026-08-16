@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-08-16T14-42-51-490Z",
+  "batchSize": 500,
+  "reports": [
+    {
+      "key": "load",
+      "name": "Load Test",
+      "purpose": "Compare achieved performance against the target metrics.",
+      "batch_size": 500,
+      "bytes_per_entry": 230,
+      "started_at": "2026-08-16T14:39:20.114Z",
+      "settle_seconds": 4.32,
+      "phases": [
+        {
+          "target_logs_per_second": 15000,
+          "duration_seconds": 163.65,
+          "requests_sent": 3601,
+          "requests_completed": 3601,
+          "logs_accepted": 940000,
+          "logs_rejected_validation": 0,
+          "logs_shed": 860500,
+          "requests_shed": 1721,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 5743.94,
+          "target_attainment_percent": 38.29,
+          "error_rate_percent": 47.792,
+          "latency_ms_scheduled": {
+            "p50": 26.67,
+            "p90": 9624.61,
+            "p95": 19996.11,
+            "p99": 46634.84,
+            "max": 47605.07,
+            "mean": 3122.98
+          },
+          "latency_ms_wire": {
+            "p50": 26.02,
+            "p90": 9624.27,
+            "p95": 19995.45,
+            "p99": 46634.39,
+            "max": 47601.44,
+            "mean": 3121.92
+          },
+          "status_codes": {
+            "200": 1880,
+            "503": 1721
+          },
+          "errors": {}
+        }
+      ],
+      "totals": {
+        "logs_accepted": 940000,
+        "logs_shed": 860500,
+        "requests_failed": 0,
+        "rows_before": 1050000,
+        "rows_after": 1990417,
+        "rows_inserted": 940417,
+        "accounting_delta": 417
+      },
+      "freshness_ms": 29979.95,
+      "queries": [
+        {
+          "name": "aggregate_1h_1m_by_service",
+          "requests": 203,
+          "errors": 6,
+          "latency": {
+            "p50": 8242.68,
+            "p90": 11657.31,
+            "p95": 13067.4,
+            "p99": 14369.6,
+            "max": 14457.36,
+            "mean": 6919.24
+          },
+          "statuses": {
+            "200": 186,
+            "503": 6
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"inventory\",\"count\":65},{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"gateway\",\"count\":78},{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"search\",\"count\":83},{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"checkout\",\"count\":84},{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"recommendations\",\"count\":75},{\"start\":\"2026-08-16T13:54:00Z\",\"group\":\"auth\",\"count\":73},{\"start\":"
+        },
+        {
+          "name": "aggregate_24h_1h_by_level",
+          "requests": 203,
+          "errors": 18,
+          "latency": {
+            "p50": 8328.9,
+            "p90": 11039.38,
+            "p95": 11623.05,
+            "p99": 14544.41,
+            "max": 14568.93,
+            "mean": 6805.85
+          },
+          "statuses": {
+            "200": 174,
+            "503": 18
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"debug\",\"count\":196},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"info\",\"count\":598},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"warn\",\"count\":158},{\"start\":\"2026-08-15T14:00:00Z\",\"group\":\"error\",\"count\":48},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"debug\",\"count\":193},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"info\",\"count\":610},{\"start\":\"2026-08-15T15:00"
+        },
+        {
+          "name": "logs_recent_page",
+          "requests": 203,
+          "errors": 26,
+          "latency": {
+            "p50": 6996.93,
+            "p90": 10001.62,
+            "p95": 10013.07,
+            "p99": 10113.87,
+            "max": 10119.59,
+            "mean": 5720.82
+          },
+          "statuses": {
+            "200": 167,
+            "503": 26
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"4580001\",\"timestamp\":\"2026-08-16T14:42:13.792Z\",\"level\":\"info\",\"service\":\"freshness-probe\",\"message\":\"freshness-probe-1786891333791-3yd23h9w863\",\"attributes\":{}},{\"id\":\"4575948\",\"timestamp\":\"2026-08-16T14:41:15.142Z\",\"level\":\"info\",\"service\":\"gateway\",\"message\":\"retrying failed operation #58909\",\"attributes\":{\"cached\":false,\"region\":\"us-west\",\"retries\":3,\"user_id\":\"7312\",\"request_i"
+        },
+        {
+          "name": "logs_filtered",
+          "requests": 203,
+          "errors": 27,
+          "latency": {
+            "p50": 7078.18,
+            "p90": 10001.98,
+            "p95": 10051.36,
+            "p99": 10142.74,
+            "max": 10143.33,
+            "mean": 5769.75
+          },
+          "statuses": {
+            "200": 166,
+            "503": 27
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"4576332\",\"timestamp\":\"2026-08-16T14:41:15.121Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"request completed successfully #48653\",\"attributes\":{\"cached\":false,\"region\":\"eu-central\",\"retries\":3,\"user_id\":\"13158\",\"request_id\":\"req-2v67fr\"}},{\"id\":\"4574507\",\"timestamp\":\"2026-08-16T14:41:15.115Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"cache miss for key #20285\",\"attribute"
+        }
+      ],
+      "resources": {
+        "logsvc-app": {
+          "samples": 50,
+          "cpuPercentMean": 13.33,
+          "cpuPercentMax": 44,
+          "memoryMiBMean": 107.12,
+          "memoryMiBMax": 126.2,
+          "memoryLimitMiB": 256
+        },
+        "logsvc-postgres": {
+          "samples": 50,
+          "cpuPercentMean": 93.66,
+          "cpuPercentMax": 108.81,
+          "memoryMiBMean": 355.12,
+          "memoryMiBMax": 388.1,
+          "memoryLimitMiB": 1024
+        }
+      },
+      "service_metrics": {
+        "uptime_seconds": 654.745,
+        "ingest": {
+          "entries_received": 5701089,
+          "entries_accepted": 4579585,
+          "entries_rejected": 4,
+          "requests_shed": 2003,
+          "batches_flushed": 4219,
+          "rows_copied": 4580001,
+          "copy_failures": 0,
+          "flush_latency_ms": {
+            "count": 4096,
+            "p50": 5.297,
+            "p90": 63.909,
+            "p95": 74.796,
+            "p99": 497.093,
+            "max": 1104.352
+          },
+          "batch_rows": {
+            "count": 4096,
+            "p50": 500,
+            "p90": 2000,
+            "p95": 5000,
+            "p99": 10000,
+            "max": 10000
+          },
+          "end_to_end_latency_ms": {
+            "count": 4096,
+            "p50": 67.069,
+            "p90": 10900.317,
+            "p95": 16988.249,
+            "p99": 44780.002,
+            "max": 47475.014
+          }
+        },
+        "query": {
+          "logs_requests": 776,
+          "logs_errors": 69,
+          "logs_latency_ms": {
+            "count": 762,
+            "p50": 2618.086,
+            "p90": 9986.651,
+            "p95": 10000.654,
+            "p99": 10053.216,
+            "max": 29282.174
+          },
+          "aggregate_requests": 771,
+          "aggregate_errors": 32,
+          "aggregate_latency_ms": {
+            "count": 754,
+            "p50": 3769.858,
+            "p90": 10839.792,
+            "p95": 11599.743,
+            "p99": 14046.427,
+            "max": 14565.418
+          }
+        },
+        "retention": {
+          "sweeps": 4,
+          "partitions_dropped": 0,
+          "last_sweep_at": "2026-08-16T14:41:52.171Z"
+        },
+        "memory": {
+          "rss_mb": 156.813,
+          "heap_used_mb": 11.631,
+          "heap_total_mb": 24.652,
+          "external_mb": 16.317,
+          "array_buffers_mb": 12.549
+        },
+        "writer": {
+          "pending_rows": 0,
+          "queued_batches": 0,
+          "busy_writers": 0,
+          "healthy_writers": 4,
+          "total_writers": 4,
+          "open_batch_rows": 0
+        }
+      }
+    }
+  ]
+}

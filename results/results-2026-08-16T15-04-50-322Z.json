@@ -1,0 +1,303 @@
+{
+  "generatedAt": "2026-08-16T15-04-50-322Z",
+  "batchSize": 500,
+  "reports": [
+    {
+      "key": "spike",
+      "name": "Spike Test",
+      "purpose": "Verify the system absorbs a sudden spike and recovers afterwards.",
+      "batch_size": 500,
+      "bytes_per_entry": 230,
+      "started_at": "2026-08-16T15:02:39.726Z",
+      "settle_seconds": 4.42,
+      "phases": [
+        {
+          "target_logs_per_second": 7500,
+          "duration_seconds": 30.13,
+          "requests_sent": 451,
+          "requests_completed": 451,
+          "logs_accepted": 225500,
+          "logs_rejected_validation": 0,
+          "logs_shed": 0,
+          "requests_shed": 0,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 7484.37,
+          "target_attainment_percent": 99.79,
+          "error_rate_percent": 0,
+          "latency_ms_scheduled": {
+            "p50": 29.21,
+            "p90": 52.39,
+            "p95": 81.98,
+            "p99": 130.07,
+            "max": 213.59,
+            "mean": 36.55
+          },
+          "latency_ms_wire": {
+            "p50": 28.62,
+            "p90": 50.35,
+            "p95": 65.3,
+            "p99": 111.37,
+            "max": 123.49,
+            "mean": 34.75
+          },
+          "status_codes": {
+            "200": 451
+          },
+          "errors": {}
+        },
+        {
+          "target_logs_per_second": 30000,
+          "duration_seconds": 10.4,
+          "requests_sent": 601,
+          "requests_completed": 601,
+          "logs_accepted": 300500,
+          "logs_rejected_validation": 0,
+          "logs_shed": 0,
+          "requests_shed": 0,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 28893.4,
+          "target_attainment_percent": 96.31,
+          "error_rate_percent": 0,
+          "latency_ms_scheduled": {
+            "p50": 131.51,
+            "p90": 725.06,
+            "p95": 950.35,
+            "p99": 1278.23,
+            "max": 1583.32,
+            "mean": 296.5
+          },
+          "latency_ms_wire": {
+            "p50": 130.45,
+            "p90": 724.83,
+            "p95": 949.72,
+            "p99": 1277.78,
+            "max": 1582.51,
+            "mean": 295.21
+          },
+          "status_codes": {
+            "200": 601
+          },
+          "errors": {}
+        },
+        {
+          "target_logs_per_second": 7500,
+          "duration_seconds": 60.08,
+          "requests_sent": 900,
+          "requests_completed": 900,
+          "logs_accepted": 450000,
+          "logs_rejected_validation": 0,
+          "logs_shed": 0,
+          "requests_shed": 0,
+          "requests_failed": 0,
+          "achieved_logs_per_second": 7490.32,
+          "target_attainment_percent": 99.87,
+          "error_rate_percent": 0,
+          "latency_ms_scheduled": {
+            "p50": 33.82,
+            "p90": 80.94,
+            "p95": 102.15,
+            "p99": 170.68,
+            "max": 287.08,
+            "mean": 45.23
+          },
+          "latency_ms_wire": {
+            "p50": 33.22,
+            "p90": 78.69,
+            "p95": 100.27,
+            "p99": 166.76,
+            "max": 276.65,
+            "mean": 43.91
+          },
+          "status_codes": {
+            "200": 900
+          },
+          "errors": {}
+        }
+      ],
+      "totals": {
+        "logs_accepted": 976000,
+        "logs_shed": 0,
+        "requests_failed": 0,
+        "rows_before": 1050000,
+        "rows_after": 2026001,
+        "rows_inserted": 976001,
+        "accounting_delta": 1
+      },
+      "freshness_ms": 14273.98,
+      "queries": [
+        {
+          "name": "aggregate_1h_1m_by_service",
+          "intervalMs": 1000,
+          "requests": 99,
+          "skipped": 25,
+          "errors": 0,
+          "latency": {
+            "p50": 791.46,
+            "p90": 1444.01,
+            "p95": 1900.49,
+            "p99": 2402.06,
+            "max": 2402.06,
+            "mean": 796.45
+          },
+          "statuses": {
+            "200": 99
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"inventory\",\"count\":68},{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"gateway\",\"count\":67},{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"search\",\"count\":76},{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"checkout\",\"count\":71},{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"recommendations\",\"count\":68},{\"start\":\"2026-08-16T14:17:00Z\",\"group\":\"auth\",\"count\":58},{\"start\":"
+        },
+        {
+          "name": "aggregate_24h_1h_by_level",
+          "intervalMs": 10000,
+          "requests": 12,
+          "skipped": 0,
+          "errors": 0,
+          "latency": {
+            "p50": 1163.16,
+            "p90": 2256.52,
+            "p95": 2362.51,
+            "p99": 2362.51,
+            "max": 2362.51,
+            "mean": 1279.37
+          },
+          "statuses": {
+            "200": 12
+          },
+          "lastBody": "{\"buckets\":[{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"debug\",\"count\":447},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"info\",\"count\":1144},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"warn\",\"count\":317},{\"start\":\"2026-08-15T15:00:00Z\",\"group\":\"error\",\"count\":92},{\"start\":\"2026-08-15T16:00:00Z\",\"group\":\"debug\",\"count\":222},{\"start\":\"2026-08-15T16:00:00Z\",\"group\":\"info\",\"count\":576},{\"start\":\"2026-08-15T16:0"
+        },
+        {
+          "name": "logs_recent_page",
+          "intervalMs": 1000,
+          "requests": 124,
+          "skipped": 0,
+          "errors": 0,
+          "latency": {
+            "p50": 5.57,
+            "p90": 69.96,
+            "p95": 128.46,
+            "p99": 311.61,
+            "max": 378.44,
+            "mean": 26.04
+          },
+          "statuses": {
+            "200": 124
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"20724005\",\"timestamp\":\"2026-08-16T15:04:30.377Z\",\"level\":\"info\",\"service\":\"freshness-probe\",\"message\":\"freshness-probe-1786892670377-zkj1mph9m4\",\"attributes\":{}},{\"id\":\"20722095\",\"timestamp\":\"2026-08-16T15:04:15.293Z\",\"level\":\"error\",\"service\":\"search\",\"message\":\"database connection acquired #30068\",\"attributes\":{\"cached\":true,\"region\":\"eu-central\",\"retries\":3,\"user_id\":\"18493\",\"re"
+        },
+        {
+          "name": "logs_filtered",
+          "intervalMs": 5000,
+          "requests": 24,
+          "skipped": 0,
+          "errors": 0,
+          "latency": {
+            "p50": 20.58,
+            "p90": 146.32,
+            "p95": 170.55,
+            "p99": 280.9,
+            "max": 280.9,
+            "mean": 56.08
+          },
+          "statuses": {
+            "200": 24
+          },
+          "lastBody": "{\"logs\":[{\"id\":\"20716437\",\"timestamp\":\"2026-08-16T15:04:15.270Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"inventory reservation confirmed #5526\",\"attributes\":{\"cached\":true,\"region\":\"us-east\",\"retries\":1,\"user_id\":\"37465\",\"request_id\":\"req-5y6uyr\"}},{\"id\":\"20704437\",\"timestamp\":\"2026-08-16T15:04:15.270Z\",\"level\":\"error\",\"service\":\"checkout\",\"message\":\"inventory reservation confirmed #5526\","
+        }
+      ],
+      "resources": {
+        "logsvc-app": {
+          "samples": 31,
+          "cpuPercentMean": 11.54,
+          "cpuPercentMax": 39.03,
+          "memoryMiBMean": 144.84,
+          "memoryMiBMax": 148.2,
+          "memoryLimitMiB": 256
+        },
+        "logsvc-postgres": {
+          "samples": 31,
+          "cpuPercentMean": 76.7,
+          "cpuPercentMax": 106.34,
+          "memoryMiBMean": 332.69,
+          "memoryMiBMax": 347.7,
+          "memoryLimitMiB": 1024
+        }
+      },
+      "service_metrics": {
+        "uptime_seconds": 1973.571,
+        "ingest": {
+          "entries_received": 22029093,
+          "entries_accepted": 20723589,
+          "entries_rejected": 4,
+          "requests_shed": 2371,
+          "batches_flushed": 21073,
+          "rows_copied": 20724005,
+          "copy_failures": 0,
+          "flush_latency_ms": {
+            "count": 4096,
+            "p50": 21.519,
+            "p90": 131.624,
+            "p95": 241.968,
+            "p99": 667.742,
+            "max": 1537.461
+          },
+          "batch_rows": {
+            "count": 4096,
+            "p50": 1000,
+            "p90": 2000,
+            "p95": 3000,
+            "p99": 5004,
+            "max": 10000
+          },
+          "end_to_end_latency_ms": {
+            "count": 4096,
+            "p50": 87.681,
+            "p90": 2071.148,
+            "p95": 2609.346,
+            "p99": 3361.878,
+            "max": 3781.754
+          }
+        },
+        "query": {
+          "logs_requests": 1528,
+          "logs_errors": 80,
+          "logs_latency_ms": {
+            "count": 1528,
+            "p50": 76.687,
+            "p90": 9100.208,
+            "p95": 9999.815,
+            "p99": 10051.02,
+            "max": 30803.301
+          },
+          "aggregate_requests": 1184,
+          "aggregate_errors": 34,
+          "aggregate_latency_ms": {
+            "count": 1184,
+            "p50": 2483.052,
+            "p90": 10366.62,
+            "p95": 11529.939,
+            "p99": 14107.915,
+            "max": 20789.641
+          }
+        },
+        "retention": {
+          "sweeps": 8,
+          "partitions_dropped": 0,
+          "last_sweep_at": "2026-08-16T15:01:52.130Z"
+        },
+        "memory": {
+          "rss_mb": 147.531,
+          "heap_used_mb": 11.908,
+          "heap_total_mb": 18.152,
+          "external_mb": 12.354,
+          "array_buffers_mb": 8.695
+        },
+        "writer": {
+          "pending_rows": 0,
+          "queued_batches": 0,
+          "busy_writers": 0,
+          "healthy_writers": 4,
+          "total_writers": 4,
+          "open_batch_rows": 0
+        }
+      }
+    }
+  ]
+}

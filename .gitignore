@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+
+# results/ is deliberately tracked: it holds the raw measurement data the
+# README's performance claims are derived from.

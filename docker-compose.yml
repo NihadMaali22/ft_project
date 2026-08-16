@@ -1,0 +1,95 @@
+# A bare `docker compose up` with no env file and no arguments must produce the
+# plain, unauthenticated core service. Every optional feature below is either
+# absent or explicitly defaulted to its off state.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: logsvc-postgres
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+    environment:
+      POSTGRES_USER: logs
+      POSTGRES_PASSWORD: logs
+      POSTGRES_DB: logs
+      # The dataset is reproducible; skipping fsync-heavy initdb work costs
+      # nothing and keeps first-boot fast.
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logs -d logs"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    # Compose v2+ honours `deploy.resources` for `docker compose up`, but the
+    # non-swarm keys below are kept so older CLIs enforce the same ceiling.
+    cpus: 1.0
+    mem_limit: 1g
+    shm_size: 256mb
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logsvc-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://logs:logs@postgres:5432/logs
+      # --- optional features, all defaulted to off ---
+      # Written as ${VAR:-default} so CI can exercise the alternate
+      # configuration without an env file, while a bare `docker compose up`
+      # with nothing set still yields the plain, unauthenticated core service.
+      AUTH_ENABLED: "${AUTH_ENABLED:-false}"
+      LOADGEN_API_KEY: "${LOADGEN_API_KEY:-}"
+      RATE_LIMIT_ENABLED: "${RATE_LIMIT_ENABLED:-false}"
+      ATTR_GIN_INDEX: "${ATTR_GIN_INDEX:-false}"
+      SERVICE_TS_INDEX: "${SERVICE_TS_INDEX:-false}"
+      # --- retention ---
+      RETENTION_DAYS: "30"
+      RETENTION_SWEEP_INTERVAL_MS: "300000"
+      # --- ingest tuning ---
+      PG_SYNCHRONOUS_COMMIT: "off"
+      INGEST_FLUSH_INTERVAL_MS: "20"
+      INGEST_MAX_BATCH_ROWS: "10000"
+      INGEST_MAX_PENDING_ROWS: "60000"
+      INGEST_BATCH_TIMEOUT_MS: "30000"
+      INGEST_WRITER_CONNECTIONS: "4"
+      QUERY_POOL_SIZE: "4"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    cpus: 0.5
+    mem_limit: 256m
+    restart: unless-stopped
+
+volumes:
+  pgdata:

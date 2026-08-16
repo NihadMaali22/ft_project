@@ -1,0 +1,11 @@
+{
+  // Typechecks the tests and the load harness, which the build config excludes
+  // because they are never emitted into dist/.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "loadtest/**/*.ts"]
+}

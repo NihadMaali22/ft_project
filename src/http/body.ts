@@ -13,25 +13,50 @@ import { payloadTooLarge, badRequest } from './errors.ts';
  * entries per second under a 0.5 CPU budget that overhead is not affordable.
  */
 
-/** Fast path: most bodies arrive in a handful of chunks. */
-async function collect(stream: Readable, maxBytes: number): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  let total = 0;
+/**
+ * Fast path: most bodies arrive in a handful of chunks.
+ *
+ * Written against the raw 'data'/'end' events rather than `for await`. Async
+ * iteration over a stream allocates an iterator and a promise per chunk, and
+ * for a body that arrives in one chunk - the norm here - that machinery costs
+ * more than the read itself. The single-chunk case also avoids the array and
+ * the copy entirely.
+ */
+function collect(stream: Readable, maxBytes: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    let single: Buffer | null = null;
+    let chunks: Buffer[] | null = null;
+    let total = 0;
 
-  for await (const chunk of stream) {
-    const buffer = chunk as Buffer;
-    total += buffer.length;
-    if (total > maxBytes) {
-      stream.destroy();
-      throw payloadTooLarge(`request body exceeds ${maxBytes} bytes`);
-    }
-    chunks.push(buffer);
-  }
+    stream.on('data', (chunk: Buffer) => {
+      total += chunk.length;
+      if (total > maxBytes) {
+        stream.destroy();
+        reject(payloadTooLarge(`request body exceeds ${maxBytes} bytes`));
+        return;
+      }
 
-  // Avoids a copy when the whole body arrived in one chunk, which is the
-  // common case for batches under the socket buffer size.
-  return chunks.length === 1 ? (chunks[0] as Buffer) : Buffer.concat(chunks, total);
+      if (single === null && chunks === null) {
+        single = chunk;
+      } else if (chunks === null) {
+        chunks = [single as Buffer, chunk];
+        single = null;
+      } else {
+        chunks.push(chunk);
+      }
+    });
+
+    stream.on('end', () => {
+      if (single !== null) resolve(single);
+      else if (chunks !== null) resolve(Buffer.concat(chunks, total));
+      else resolve(EMPTY);
+    });
+
+    stream.on('error', reject);
+  });
 }
+
+const EMPTY = Buffer.alloc(0);
 
 export async function readBody(request: IncomingMessage, maxBytes: number): Promise<Buffer> {
   const encoding = request.headers['content-encoding'];

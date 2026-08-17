@@ -64,11 +64,11 @@ services:
       RETENTION_SWEEP_INTERVAL_MS: "300000"
       # --- ingest tuning ---
       PG_SYNCHRONOUS_COMMIT: "off"
-      INGEST_FLUSH_INTERVAL_MS: "20"
+      INGEST_FLUSH_INTERVAL_MS: "5"
       INGEST_MAX_BATCH_ROWS: "10000"
       INGEST_MAX_PENDING_ROWS: "60000"
       INGEST_BATCH_TIMEOUT_MS: "30000"
-      INGEST_WRITER_CONNECTIONS: "4"
+      INGEST_WRITER_CONNECTIONS: "8"
       QUERY_POOL_SIZE: "4"
     ports:
       - "8080:8080"
@@ -87,6 +87,11 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
+    # A finer CFS period (cpu_period 10000 / cpu_quota 5000, the same 0.5 CPU cut
+    # into 5 ms slices instead of 50 ms) was measured here and rejected: it cost
+    # throughput and made p99 worse, and it conflicts with the deploy limit
+    # above, which is the one guaranteed to be enforced. The latency tail comes
+    # from running at CPU saturation, not from the throttling period.
     cpus: 0.5
     mem_limit: 256m
     restart: unless-stopped

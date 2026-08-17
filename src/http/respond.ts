@@ -26,6 +26,22 @@ export function sendJson(
 }
 
 /**
+ * Sends a body that is already serialised.
+ *
+ * Lets the hot path answer from a cached Buffer, skipping JSON.stringify and
+ * the encode that sendJson performs on every call. The ingest reply is the same
+ * handful of bytes on almost every request, so serialising it per request is
+ * pure waste at 15k requests/second.
+ */
+export function sendBuffer(response: ServerResponse, status: number, payload: Buffer): void {
+  response.writeHead(status, {
+    'content-type': JSON_CONTENT_TYPE,
+    'content-length': payload.length,
+  });
+  response.end(payload);
+}
+
+/**
  * Maps a thrown error onto the documented error shape, `{"error": "..."}`.
  *
  * Three cases, in order:

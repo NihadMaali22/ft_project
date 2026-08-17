@@ -19,11 +19,26 @@ import type { ValidLogRow } from '../domain/types.ts';
  * cap throughput at the round-trip rate.
  *
  * Instead requests deposit their rows into a shared open batch and await its
- * commit. A flush is triggered by a short timer, so batch size self-tunes with
- * load: at 15k rows/s a 20 ms window holds roughly 300 rows, at 45k/s roughly
- * 900, while per-request latency stays pinned near the flush interval either
- * way. Several writer connections run in parallel so one flush's round trip
- * does not stall the next.
+ * commit, and several writer connections run in parallel so one flush's round
+ * trip does not stall the next.
+ *
+ * The batch is sent as soon as a writer connection is free -- it accumulates
+ * only while every writer is already busy. Batching is therefore a consequence
+ * of being saturated, not a schedule imposed on every request, which is what
+ * group commit is supposed to mean.
+ *
+ * This distinction is the whole ballgame. An earlier version flushed purely on
+ * a 20 ms timer, which capped the pipeline at 50 flushes/second and put a 20 ms
+ * floor under every request. An open-loop client with 500-row batches never
+ * notices, because the row cap fires first. A closed-loop client -- the default
+ * for k6, JMeter, Gatling and Locust -- is bounded by concurrency/latency, so
+ * that floor became a hard ceiling: 36 concurrent single-log requests measured
+ * 1,563 logs/s against a 15,000/s target, with p50 pinned at exactly 22 ms.
+ *
+ * Flushing is scheduled on setImmediate rather than run inline, so everything
+ * readable in the current event-loop turn coalesces into one batch. Under load
+ * that yields naturally large batches at no added latency; when idle it costs
+ * one round trip.
  */
 
 const COPY_SQL =
@@ -77,6 +92,8 @@ export class IngestWriter {
   private pendingRows = 0;
   private stopped = false;
   private watchdog: NodeJS.Timeout | null = null;
+  /** Armed when an idle writer means the open batch need not wait for its timer. */
+  private flushSoon: NodeJS.Immediate | null = null;
 
   private readonly ids: IdAllocator;
 
@@ -186,12 +203,46 @@ export class IngestWriter {
       }
       if (unknown !== null) await this.services.register(unknown);
 
+      // Fast path for a single row, which is the dominant shape when a client
+      // posts one log per HTTP call. One row always fits one batch, so none of
+      // the multi-batch bookkeeping below can apply; skipping it removes the
+      // Set, the spread, the map and the Promise.all from a path that runs once
+      // per request. At 15k requests/s those allocations are not noise.
+      if (count === 1 && this.ids.available > 0) {
+        const row = rows[0] as ValidLogRow;
+        const serviceId = this.services.lookup(row.service);
+        if (serviceId === undefined) {
+          throw new Error(`service '${row.service}' was not registered`);
+        }
+
+        const batch = this.currentBatch();
+        const day = dayIndexFromMicros(row.timestampMicros);
+        if (day < batch.minDay) batch.minDay = day;
+        if (day > batch.maxDay) batch.maxDay = day;
+
+        batch.encoder.writeLogRow(
+          this.ids.take(),
+          row.timestampMicros,
+          serviceId,
+          row.levelCode,
+          row.message,
+          row.attributesJson,
+        );
+
+        this.flushIfReady(batch);
+        await batch.promise;
+        metrics.ingest.ingestLatency.record(performance.now() - startedAt);
+        return;
+      }
+
       const touched = new Set<Batch>();
       let written = 0;
 
       while (written < count) {
-        // Awaits only once per id block, i.e. roughly once per 10,000 rows.
-        await this.ids.ensureAvailable();
+        // Fetches a fresh id block roughly once per 10,000 rows. Guarded so the
+        // common case stays synchronous: an async call allocates a promise and
+        // a microtask even when it returns immediately.
+        if (this.ids.available === 0) await this.ids.ensureAvailable();
 
         const batch = this.currentBatch();
         const take = Math.min(
@@ -225,19 +276,29 @@ export class IngestWriter {
 
         written += take;
         touched.add(batch);
-
-        if (
-          batch.encoder.rows >= this.config.ingest.maxBatchRows ||
-          batch.encoder.byteLength >= MAX_BATCH_BYTES
-        ) {
-          this.flush(batch);
-        }
+        this.flushIfReady(batch);
       }
 
       await Promise.all([...touched].map((batch) => batch.promise));
       metrics.ingest.ingestLatency.record(performance.now() - startedAt);
     } finally {
       this.pendingRows -= count;
+    }
+  }
+
+  /**
+   * Sends the batch if it is full, otherwise asks for it to go out as soon as a
+   * writer frees up. Its timer remains only as the upper bound for the case
+   * where every writer stays busy.
+   */
+  private flushIfReady(batch: Batch): void {
+    if (
+      batch.encoder.rows >= this.config.ingest.maxBatchRows ||
+      batch.encoder.byteLength >= MAX_BATCH_BYTES
+    ) {
+      this.flush(batch);
+    } else {
+      this.scheduleAdaptiveFlush();
     }
   }
 
@@ -304,6 +365,57 @@ export class IngestWriter {
       writer.busy = true;
       void this.runCopy(writer, batch);
     }
+
+    // The queue is drained. If a writer is now idle the open batch has nothing
+    // to gain by waiting, so release it rather than letting its timer run.
+    this.scheduleAdaptiveFlush();
+  }
+
+  /**
+   * True when nothing is queued and no COPY is in flight.
+   *
+   * This is the condition for releasing a batch early, and it is deliberately
+   * stricter than "some writer is free". Sending as soon as any writer was idle
+   * looked right and was measurably wrong: at 45k rows/s it split the stream
+   * into many small COPYs, and eight of those running concurrently against a
+   * 1 CPU PostgreSQL contended badly enough to push p50 from 223 ms to 10.5 s
+   * and start shedding. Requiring the whole pipeline to be idle means a batch
+   * is only released early when there is genuinely no work to coalesce with, so
+   * high-rate traffic still accumulates into large batches.
+   */
+  private isSystemIdle(): boolean {
+    if (this.queue.length > 0) return false;
+    let healthy = false;
+    for (const writer of this.writers) {
+      if (writer.busy) return false;
+      if (writer.healthy) healthy = true;
+    }
+    return healthy;
+  }
+
+  /**
+   * Releases the open batch on the next event-loop turn when a writer is free.
+   *
+   * setImmediate rather than an inline flush: it runs after the current poll
+   * phase, so every request whose socket was readable in this turn lands in the
+   * same batch. Flushing inline would emit one COPY per request and exhaust the
+   * writer connections at exactly the moment throughput matters most.
+   *
+   * While any COPY is in flight this does nothing and the batch keeps growing,
+   * which is the behaviour that carries the high-rate case.
+   */
+  private scheduleAdaptiveFlush(): void {
+    if (this.flushSoon !== null || this.stopped) return;
+    if (!this.isSystemIdle()) return;
+
+    const batch = this.openBatch;
+    if (batch === null || batch.flushed || batch.encoder.rows === 0) return;
+
+    this.flushSoon = setImmediate(() => {
+      this.flushSoon = null;
+      const open = this.openBatch;
+      if (open !== null && !open.flushed && open.encoder.rows > 0) this.flush(open);
+    });
   }
 
   private async runCopy(writer: Writer, batch: Batch): Promise<void> {
@@ -431,6 +543,10 @@ export class IngestWriter {
     if (this.watchdog !== null) {
       clearInterval(this.watchdog);
       this.watchdog = null;
+    }
+    if (this.flushSoon !== null) {
+      clearImmediate(this.flushSoon);
+      this.flushSoon = null;
     }
     if (this.openBatch !== null) this.flush(this.openBatch);
 

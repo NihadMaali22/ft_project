@@ -105,10 +105,16 @@ export function loadConfig(): Config {
     })(),
 
     ingest: {
-      flushIntervalMs: int('INGEST_FLUSH_INTERVAL_MS', 20, 1, 5000),
+      // Upper bound only. Batches normally leave as soon as a writer is free,
+      // so this caps how long one waits when every writer is busy; it is not
+      // the latency every request pays.
+      flushIntervalMs: int('INGEST_FLUSH_INTERVAL_MS', 5, 1, 5000),
       maxBatchRows: int('INGEST_MAX_BATCH_ROWS', 10_000, 100, 200_000),
       maxPendingRows: int('INGEST_MAX_PENDING_ROWS', 60_000, 1000, 1_000_000),
-      writerConnections: int('INGEST_WRITER_CONNECTIONS', 4, 1, 32),
+      // Concurrent COPYs in flight. With flushes released on demand rather than
+      // on a timer, this sets how many round trips can overlap, which is the
+      // throughput term for a client that waits for each response.
+      writerConnections: int('INGEST_WRITER_CONNECTIONS', 8, 1, 32),
       maxBodyBytes: int('INGEST_MAX_BODY_BYTES', 32 * 1024 * 1024, 1024, 256 * 1024 * 1024),
       batchTimeoutMs: int('INGEST_BATCH_TIMEOUT_MS', 30_000, 1000, 600_000),
     },

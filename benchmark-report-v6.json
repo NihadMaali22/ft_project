@@ -1,0 +1,244 @@
+{
+  "tool": "@foothill/logs-benchmark",
+  "generatedAt": "2026-08-19T20:25:27.371Z",
+  "mode": "compose",
+  "endpoint": "http://127.0.0.1:8080",
+  "durationScale": 1,
+  "resourceLimitsEnforced": true,
+  "generator": "grafana/k6:0.54.0 in Docker on lgbench-6bc9022dc1_default (cpus 4, 1g)",
+  "generatorIsolated": true,
+  "engine": {
+    "cpus": 8,
+    "memoryBytes": 8327393280,
+    "operatingSystem": "Docker Desktop",
+    "requiredCpus": 5.5,
+    "sufficient": true,
+    "requiredMemoryBytes": 2415919104,
+    "memorySufficient": true
+  },
+  "machineSpeed": {
+    "workUnitsPerSecond": 18.839487565938207,
+    "factor": 0.362297837806504
+  },
+  "correctness": {
+    "passed": 15,
+    "total": 15,
+    "cap": null,
+    "checks": [
+      {
+        "name": "health.status",
+        "passed": true,
+        "expected": "GET /health returns HTTP 200",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "ingestion.single",
+        "passed": true,
+        "expected": "a valid log is accepted",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "ingestion.batch",
+        "passed": true,
+        "expected": "a valid batch is accepted",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "ingestion.partial-invalid",
+        "passed": true,
+        "expected": "invalid entries are reported without accepting them",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "ingestion.empty",
+        "passed": true,
+        "expected": "an empty batch is rejected with a client error",
+        "actual": "HTTP status 400"
+      },
+      {
+        "name": "ingestion.malformed-json",
+        "passed": true,
+        "expected": "malformed JSON is rejected with a client error",
+        "actual": "HTTP status 400"
+      },
+      {
+        "name": "query.unfiltered",
+        "passed": true,
+        "expected": "stored logs can be listed",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "query.filters",
+        "passed": true,
+        "expected": "service and level filters are applied",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "query.invalid-parameters",
+        "passed": true,
+        "expected": "invalid query parameters return a client error",
+        "actual": "HTTP status 400"
+      },
+      {
+        "name": "pagination.stable-order",
+        "passed": true,
+        "expected": "results have deterministic ordering",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "pagination.cursor",
+        "passed": true,
+        "expected": "cursor pages have no gaps or duplicates",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "pagination.invalid-cursor",
+        "passed": true,
+        "expected": "invalid cursors return a client error",
+        "actual": "HTTP status 400"
+      },
+      {
+        "name": "aggregate.buckets",
+        "passed": true,
+        "expected": "time buckets contain correct counts",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "aggregate.grouping",
+        "passed": true,
+        "expected": "service and level grouping is supported",
+        "actual": "HTTP status 200"
+      },
+      {
+        "name": "aggregate.invalid-options",
+        "passed": true,
+        "expected": "invalid aggregation options return a client error",
+        "actual": "HTTP status 400"
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "scenario": "load",
+      "status": "completed",
+      "logsPerSecond": 9957.5,
+      "errorRate": 0,
+      "latencyP95Ms": 5626.1777574000025,
+      "aggregateP95Ms": 8542.6,
+      "readAfterWriteSuccessRate": 0.6893203883495146,
+      "thresholdPassed": false,
+      "consistencyPassed": true,
+      "acceptedRecords": 1194900,
+      "visibleRecords": 1194900,
+      "offeredLogsPerSecond": 15000,
+      "droppedIterations": 6049,
+      "generatorLimited": true,
+      "serviceLimited": false
+    },
+    {
+      "scenario": "stress",
+      "status": "completed",
+      "logsPerSecond": 2133.3333333333335,
+      "errorRate": 0.11061700944969433,
+      "latencyP95Ms": 38239.1559737,
+      "aggregateP95Ms": 10572.2,
+      "readAfterWriteSuccessRate": 0.1345646437994723,
+      "thresholdPassed": false,
+      "consistencyPassed": true,
+      "acceptedRecords": 320000,
+      "visibleRecords": 320090,
+      "offeredLogsPerSecond": 21000,
+      "droppedIterations": 27901,
+      "generatorLimited": true,
+      "serviceLimited": false
+    },
+    {
+      "scenario": "spike",
+      "status": "completed",
+      "logsPerSecond": 1850,
+      "errorRate": 0.8727472829825286,
+      "latencyP95Ms": 37698.6780782,
+      "aggregateP95Ms": 10530.5,
+      "readAfterWriteSuccessRate": 0.04915912031047866,
+      "thresholdPassed": false,
+      "consistencyPassed": true,
+      "acceptedRecords": 185000,
+      "visibleRecords": 185000,
+      "offeredLogsPerSecond": 15375,
+      "droppedIterations": 836,
+      "generatorLimited": true,
+      "serviceLimited": false
+    },
+    {
+      "scenario": "breakpoint",
+      "status": "completed",
+      "logsPerSecond": 2416.6666666666665,
+      "errorRate": 0.8988066159536604,
+      "latencyP95Ms": 30060.80232239996,
+      "aggregateP95Ms": 9348.6,
+      "readAfterWriteSuccessRate": 0.039492242595204514,
+      "thresholdPassed": false,
+      "consistencyPassed": true,
+      "acceptedRecords": 290000,
+      "visibleRecords": 290000,
+      "offeredLogsPerSecond": 24375,
+      "droppedIterations": 591,
+      "generatorLimited": true,
+      "serviceLimited": false
+    }
+  ],
+  "score": {
+    "version": "2026-08-18.v10",
+    "eligibility": {
+      "eligible": true
+    },
+    "score": 69.27666666666667,
+    "maximumScore": 100,
+    "correctness": {
+      "points": 15,
+      "maximum": 15,
+      "percentage": 100,
+      "components": {
+        "passed": 15,
+        "total": 15
+      }
+    },
+    "performance": {
+      "points": 28.276666666666667,
+      "maximum": 50,
+      "percentage": 56.553333333333335,
+      "components": {
+        "throughput": 0.26553333333333334,
+        "errors": 0.3,
+        "latency": 0,
+        "sustainedBonus": 0
+      }
+    },
+    "queries": {
+      "points": 6,
+      "maximum": 15,
+      "percentage": 40,
+      "components": {
+        "aggregateLatency": 0,
+        "eventualConsistencyPassedScenarios": 4,
+        "eventualConsistencyTotalScenarios": 4,
+        "eventualConsistencyPoints": 6,
+        "readAfterWrite": 0.6893203883495146
+      }
+    },
+    "reliability": {
+      "points": 20,
+      "maximum": 20,
+      "percentage": 100,
+      "components": {
+        "scenarioCompletion": 1,
+        "crashFree": 1
+      }
+    },
+    "calculation": {
+      "correctnessRatio": 1,
+      "uncappedScore": 69.27666666666667,
+      "appliedCap": null
+    }
+  }
+}

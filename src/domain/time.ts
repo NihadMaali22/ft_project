@@ -63,6 +63,84 @@ function hasValidCalendarDate(raw: string): boolean {
  * depend on container configuration.
  */
 export function parseIsoToMicros(raw: string): number | null {
+  const len = raw.length;
+  // Fast-path for common ISO UTC formats:
+  // "YYYY-MM-DDTHH:mm:ss.sssZ" (24) or "YYYY-MM-DDTHH:mm:ssZ" (20) or "YYYY-MM-DDTHH:mm:ss.uuuuuuZ" (27)
+  if (
+    (len === 24 || len === 20 || len === 27) &&
+    raw.charCodeAt(4) === 45 && // '-'
+    raw.charCodeAt(7) === 45 && // '-'
+    raw.charCodeAt(13) === 58 && // ':'
+    raw.charCodeAt(16) === 58 // ':'
+  ) {
+    const sep = raw.charCodeAt(10);
+    const tz = raw.charCodeAt(len - 1);
+    if ((sep === 84 || sep === 116 || sep === 32) && (tz === 90 || tz === 122)) {
+      const c0 = raw.charCodeAt(0) - 48;
+      const c1 = raw.charCodeAt(1) - 48;
+      const c2 = raw.charCodeAt(2) - 48;
+      const c3 = raw.charCodeAt(3) - 48;
+      const c5 = raw.charCodeAt(5) - 48;
+      const c6 = raw.charCodeAt(6) - 48;
+      const c8 = raw.charCodeAt(8) - 48;
+      const c9 = raw.charCodeAt(9) - 48;
+      const c11 = raw.charCodeAt(11) - 48;
+      const c12 = raw.charCodeAt(12) - 48;
+      const c14 = raw.charCodeAt(14) - 48;
+      const c15 = raw.charCodeAt(15) - 48;
+      const c17 = raw.charCodeAt(17) - 48;
+      const c18 = raw.charCodeAt(18) - 48;
+
+      if (
+        c0 >= 0 && c0 <= 9 && c1 >= 0 && c1 <= 9 && c2 >= 0 && c2 <= 9 && c3 >= 0 && c3 <= 9 &&
+        c5 >= 0 && c5 <= 9 && c6 >= 0 && c6 <= 9 && c8 >= 0 && c8 <= 9 && c9 >= 0 && c9 <= 9 &&
+        c11 >= 0 && c11 <= 9 && c12 >= 0 && c12 <= 9 && c14 >= 0 && c14 <= 9 && c15 >= 0 && c15 <= 9 &&
+        c17 >= 0 && c17 <= 9 && c18 >= 0 && c18 <= 9
+      ) {
+        const year = c0 * 1000 + c1 * 100 + c2 * 10 + c3;
+        const month = c5 * 10 + c6;
+        const day = c8 * 10 + c9;
+        const hour = c11 * 10 + c12;
+        const minute = c14 * 10 + c15;
+        const second = c17 * 10 + c18;
+
+        if (month >= 1 && month <= 12 && hour <= 23 && minute <= 59 && second <= 59) {
+          const maxDay = month === 2 && isLeapYear(year) ? 29 : (DAYS_IN_MONTH[month - 1] as number);
+          if (day >= 1 && day <= maxDay) {
+            let millis = 0;
+            let extraMicros = 0;
+
+            if (len === 20) {
+              return Date.UTC(year, month - 1, day, hour, minute, second, 0) * MICROS_PER_MS;
+            }
+
+            if (raw.charCodeAt(19) === 46) { // '.'
+              const m0 = raw.charCodeAt(20) - 48;
+              const m1 = raw.charCodeAt(21) - 48;
+              const m2 = raw.charCodeAt(22) - 48;
+              if (m0 >= 0 && m0 <= 9 && m1 >= 0 && m1 <= 9 && m2 >= 0 && m2 <= 9) {
+                millis = m0 * 100 + m1 * 10 + m2;
+                if (len === 24) {
+                  return Date.UTC(year, month - 1, day, hour, minute, second, millis) * MICROS_PER_MS;
+                }
+                if (len === 27) {
+                  const u0 = raw.charCodeAt(23) - 48;
+                  const u1 = raw.charCodeAt(24) - 48;
+                  const u2 = raw.charCodeAt(25) - 48;
+                  if (u0 >= 0 && u0 <= 9 && u1 >= 0 && u1 <= 9 && u2 >= 0 && u2 <= 9) {
+                    extraMicros = u0 * 100 + u1 * 10 + u2;
+                    return Date.UTC(year, month - 1, day, hour, minute, second, millis) * MICROS_PER_MS + extraMicros;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // General fallback for timezone offsets, variable-length sub-seconds, etc.
   const match = ISO_RE.exec(raw);
   if (match === null) return null;
 

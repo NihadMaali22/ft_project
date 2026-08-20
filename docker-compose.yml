@@ -58,18 +58,18 @@ services:
       LOADGEN_API_KEY: "${LOADGEN_API_KEY:-}"
       RATE_LIMIT_ENABLED: "${RATE_LIMIT_ENABLED:-false}"
       ATTR_GIN_INDEX: "${ATTR_GIN_INDEX:-false}"
-      SERVICE_TS_INDEX: "${SERVICE_TS_INDEX:-false}"
+      SERVICE_TS_INDEX: "${SERVICE_TS_INDEX:-true}"
       # --- retention ---
       RETENTION_DAYS: "30"
       RETENTION_SWEEP_INTERVAL_MS: "300000"
       # --- ingest tuning ---
       PG_SYNCHRONOUS_COMMIT: "off"
-      INGEST_FLUSH_INTERVAL_MS: "5"
+      INGEST_FLUSH_INTERVAL_MS: "2"
       INGEST_MAX_BATCH_ROWS: "10000"
       INGEST_MAX_PENDING_ROWS: "60000"
       INGEST_BATCH_TIMEOUT_MS: "30000"
-      INGEST_WRITER_CONNECTIONS: "8"
-      QUERY_POOL_SIZE: "4"
+      INGEST_WRITER_CONNECTIONS: "4"
+      QUERY_POOL_SIZE: "3"
     ports:
       - "8080:8080"
     healthcheck:

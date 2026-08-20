@@ -54,23 +54,6 @@ CREATE TABLE IF NOT EXISTS logs (
     CONSTRAINT logs_level_valid CHECK (level BETWEEN 0 AND 3)
 ) PARTITION BY RANGE (ts);
 
--- The one index carried by default.
---
--- It serves three access patterns at once: the ORDER BY ts DESC required by the
--- query contract, the (ts, id) keyset predicate behind cursor pagination, and
--- the range scan behind every time-bounded query and aggregation.
---
--- Deliberately a plain btree rather than a PRIMARY KEY: ids come from the
--- sequence above and are unique by construction, so paying for uniqueness
--- enforcement on every insert would buy nothing. WAL volume is the binding
--- constraint on ingestion at 1 CPU, and every additional index is a direct tax
--- on it -- which is why optional indexes are opt-in and measured, not assumed.
---
--- Created on the parent so every future partition inherits it automatically.
-CREATE INDEX IF NOT EXISTS logs_ts_id_desc_idx ON logs (ts DESC, id DESC);
+CREATE INDEX IF NOT EXISTS logs_ts_id_desc_idx ON logs (ts DESC, id DESC) INCLUDE (service_id, level);
 
--- Safety net for rows whose day partition does not yet exist. The application
--- creates partitions ahead of the rows that need them, so in steady state this
--- stays empty -- which also keeps it cheap to attach new partitions, since
--- PostgreSQL must scan the default partition to do so.
 CREATE TABLE IF NOT EXISTS logs_default PARTITION OF logs DEFAULT;
